@@ -45,6 +45,24 @@ def int_checker(question):
             print("Please enter a valid integer")
 
 
+# Calculate the ticket price based on the age
+def calc_ticket_price(var_age):
+
+    # If age is <16, price = $7.50
+    if var_age < 16:
+        price = 7.50
+
+    # If age is 15 < age < 65, price = $10.50
+    elif var_age < 65:
+        price = 10.50
+
+    # If age is >64, price = $6.50
+    else:
+        price = 6.50
+
+    return price
+
+
 # Main routine goes here...
 
 # List(s) go here...
@@ -86,6 +104,10 @@ while tickets_sold < MAX_TICKETS:
     else:
         print("??? That looks like a typo, please try again.")
         continue
+
+    # Calculate ticket cost
+    ticket_cost = calc_ticket_price(age)
+    print(f"Age: {age} | Ticket Price: {ticket_cost:.2f}")
 
     tickets_sold += 1
 

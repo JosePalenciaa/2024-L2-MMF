@@ -6,7 +6,7 @@ def calc_ticket_price(var_age):
         price = 7.50
 
     # If age is 15 < age < 65, price = $10.50
-    elif 15 < var_age < 65:
+    elif var_age < 65:
         price = 10.50
 
     # If age is >64, price = $6.50
@@ -25,4 +25,3 @@ while True:
     # Calculate ticket cost
     ticket_cost = calc_ticket_price(age)
     print(f"Age: {age} | Ticket Price: {ticket_cost:.2f}")
-    
