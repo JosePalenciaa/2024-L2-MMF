@@ -16,6 +16,7 @@ mini_movie_dict = {
     "Surcharge": surcharge
 }
 
+# Create data frame from dictionary to organise information
 mini_movie_frame = pandas.DataFrame(mini_movie_dict)
 mini_movie_frame = mini_movie_frame.set_index("Name")
 
@@ -32,6 +33,7 @@ profit = mini_movie_frame["Profit"].sum()
 add_dollars = ["Ticket Price", "Surcharge", "Total", "Profit"]
 for var_item in add_dollars:
     mini_movie_frame[var_item] = mini_movie_frame[var_item].apply(currency)
+
 print(mini_movie_frame)
 
 print()
