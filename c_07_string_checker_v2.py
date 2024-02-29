@@ -29,5 +29,3 @@ for case in range(0, 5):
 
     print(f"Payment Method: {payment_method}")
     print()
-
-
