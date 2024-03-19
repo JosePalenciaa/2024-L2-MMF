@@ -1,5 +1,7 @@
 # Functions go here...
 import pandas
+import random
+from datetime import date
 
 
 # Function to check users input
@@ -31,7 +33,24 @@ def not_blank(question):
 # Function to output instructions
 def instructions():
 
-    print("Instructions go here")
+    print('''\n
+***** Instructions *****
+
+For each ticket, enter ...
+- The person's name (cannot be blank)
+- Their age (between 12 and 120 y/o)
+- Desired payment method (cash / credit)
+
+When you have entered all the users, press "xxx" to quit.
+
+The program will then display the ticket details 
+including the cost of each ticket, the total cost 
+and the total profit.
+
+This information will also be automatically written to a 
+text file.
+
+***********************''')
 
 
 # Function to check user inputs an integer...
@@ -44,7 +63,8 @@ def int_checker(question):
             return response
 
         except ValueError:
-            print("Please enter a valid integer")
+            print("< Please enter a valid integer >")
+            print()
 
 
 # Calculate the ticket price based on the age
@@ -65,6 +85,7 @@ def calc_ticket_price(var_age):
     return price
 
 
+# Adds dollar sign...
 def currency(x):
     return f"${x:.2f}"
 
@@ -90,13 +111,13 @@ mini_movie_dict = {
 # Variables go here...
 
 # Set maximum number of tickets below
-MAX_TICKETS = 3
+MAX_TICKETS = 5
 
 # Tracks # of tickets sold
 tickets_sold = 0
 
 # Asks user if they want to see instructions (yes = display, no = continue)
-display_instructions = string_checker("Would you like to see Instructions? ", yes_no_list,
+display_instructions = string_checker("Would you like to see the INSTRUCTIONS? ", yes_no_list,
                                       "Please enter a valid response (y / n)", 1)
 
 if display_instructions == "yes":
@@ -108,11 +129,16 @@ print()
 while tickets_sold < MAX_TICKETS:
     name = not_blank("Please enter your name or 'xxx' to quit: ")
 
-    if name == "xxx":
+    if name == "xxx" and len(all_names) > 0:
         break
+
+    elif name == "xxx":
+        print("You must sell at least one ticket before quitting!")
+        continue
 
     # Asks the user for their age, if they don't fit the age parameters, return a response
     age = int_checker("Age? ")
+    print()
 
     # Age restrictions, will output respective error
     if 12 <= age <= 120:
@@ -128,7 +154,8 @@ while tickets_sold < MAX_TICKETS:
 
     # Calculate ticket cost
     ticket_cost = calc_ticket_price(age)
-    print(f"Age: {age} | Ticket Price: {ticket_cost:.2f}")
+    print(f"Name: {name} | Age: {age} | Ticket Price: ${ticket_cost:.2f}")
+    print()
 
     # Chooses a payment method
     payment_method = string_checker("Payment Method: ", payment_list,
@@ -151,7 +178,6 @@ while tickets_sold < MAX_TICKETS:
 
 # Create data frame from dictionary to organise information
 mini_movie_frame = pandas.DataFrame(mini_movie_dict)
-mini_movie_frame = mini_movie_frame.set_index("Name")
 
 # Calculate the total ticket cost (ticket + surcharge_
 mini_movie_frame["Total"] = mini_movie_frame["Surcharge"] + mini_movie_frame["Ticket Price"]
@@ -163,18 +189,80 @@ mini_movie_frame["Profit"] = mini_movie_frame["Ticket Price"] - 5
 total = mini_movie_frame["Total"].sum()
 profit = mini_movie_frame["Profit"].sum()
 
+# Choose a winner from our name list
+winner_name = random.choice(all_names)
+
+# Get position of winner name in lift
+win_index = all_names.index(winner_name)
+
+# Look up total amount won (ie: ticket price + surcharge)
+total_won = mini_movie_frame.at[win_index, "Total"]
+
 add_dollars = ["Ticket Price", "Surcharge", "Total", "Profit"]
+
 for var_item in add_dollars:
     mini_movie_frame[var_item] = mini_movie_frame[var_item].apply(currency)
 
-print(mini_movie_frame)
+# Set index before printing
+mini_movie_frame = mini_movie_frame.set_index("Name")
+
+# Get current date for heading and file name
+# Get today's date
+today = date.today()
+
+# Get day, month, and year as individual strings
+day = today.strftime("%d")
+month = today.strftime("%m")
+year = today.strftime("%y")
+
+heading = f"---- Mini Movie Fundraiser Ticket Data ({day} / {month} / {year})"
+filename = f"MMF_{year}_{month}_{day}"
+
+# Change frame to a string so that we can export it to file
+mini_movie_string = pandas.DataFrame.to_string(mini_movie_frame)
+
+# Create strings for printing
+ticket_cost_heading = "\n----- Ticket Cost / Profit -----"
+total_ticket_sales = f"Total Ticket Sales: ${total}"
+total_profit = f"Total Profit: ${profit}"
+
+sales_status = "\n*** All tickets have been sold ***"
+
+winner_heading = "\n---- Raffle Winner ----"
+winner_text = f"The winner of the raffle is {winner_name}. They have won " \
+              f"${total_won}. Their ticket is FREE."
+
+to_write = [heading, mini_movie_string, ticket_cost_heading, total_ticket_sales,
+            total_profit, sales_status, winner_heading, winner_text]
+
+# Print Output
+for item in to_write:
+    print(item)
+
+# Write output to file
+# Create file to hold data (add .txt extension)
+write_to = f"{filename}.txt"
+text_file = open(write_to, "w+")
+
+for item in to_write:
+    text_file.write(item)
+    text_file.write("\n")
+
+# Heading
+print(heading)
+print(f"The file name will be {filename}.txt")
 
 print()
-print("---- Ticket Data ----")
+print(mini_movie_frame)
 
 # Output total ticket sales and profit
+print("---- Ticket Cost / Profit ----")
 print(f"Total Ticket Sales: ${total:.2f}")
 print(f"Total Profit: ${profit:.2f}")
+
+print()
+print("---- Raffle Winner ----")
+print(f"Congratulations {winner_name}. You have won ${total_won} ie: your ticket is free!")
 
 
 # Output number of tickets sold
@@ -183,5 +271,8 @@ if tickets_sold == MAX_TICKETS:
 
 # Says how many tickets have been sold, and how many remaining
 else:
-    print(f"You have sold {tickets_sold} ticket(s). There is "
-          f"{MAX_TICKETS - tickets_sold} ticket(s) remaining.")
+    print()
+    print(f"You have sold {tickets_sold} ticket(s). {MAX_TICKETS - tickets_sold} ticket(s) remaining.")
+
+# Close the file
+text_file.close()
