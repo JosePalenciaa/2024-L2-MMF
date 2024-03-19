@@ -34,11 +34,13 @@ add_dollars = ["Ticket Price", "Surcharge", "Total", "Profit"]
 for var_item in add_dollars:
     mini_movie_frame[var_item] = mini_movie_frame[var_item].apply(currency)
 
-print(mini_movie_frame)
-
-print()
 print("---- Ticket Data ----")
+print()
+
+print(mini_movie_frame)
+print()
 
 # Output total ticket sales and profit
+print("---- Ticket Cost / Profit ----")
 print(f"Total Ticket Sales: ${total:.2f}")
 print(f"Total Profit: ${profit:.2f}")
