@@ -123,11 +123,9 @@ display_instructions = string_checker("Would you like to see the INSTRUCTIONS? "
 if display_instructions == "yes":
     instructions()
 
-print()
-
 # While there are tickets left to be sold, loop continues
 while tickets_sold < MAX_TICKETS:
-    name = not_blank("Please enter your name or 'xxx' to quit: ")
+    name = not_blank("\nPlease enter your name or 'xxx' to quit: ")
 
     if name == "xxx" and len(all_names) > 0:
         break
@@ -215,7 +213,7 @@ day = today.strftime("%d")
 month = today.strftime("%m")
 year = today.strftime("%y")
 
-heading = f"---- Mini Movie Fundraiser Ticket Data ({day} / {month} / {year})"
+heading = f"\n---- Mini Movie Fundraiser Ticket Data ({day} / {month} / {year}) ----\n"
 filename = f"MMF_{year}_{month}_{day}"
 
 # Change frame to a string so that we can export it to file
@@ -223,14 +221,27 @@ mini_movie_string = pandas.DataFrame.to_string(mini_movie_frame)
 
 # Create strings for printing
 ticket_cost_heading = "\n----- Ticket Cost / Profit -----"
-total_ticket_sales = f"Total Ticket Sales: ${total}"
-total_profit = f"Total Profit: ${profit}"
-
-sales_status = "\n*** All tickets have been sold ***"
+total_ticket_sales = f"Total Ticket Sales: ${total:.2f}"
+total_profit = f"Total Profit: ${profit:.2f}"
 
 winner_heading = "\n---- Raffle Winner ----"
 winner_text = f"The winner of the raffle is {winner_name}. They have won " \
-              f"${total_won}. Their ticket is FREE."
+              f"${total_won:.2f}. Their ticket is FREE."
+
+# Heading
+print(heading)
+print(f"The file name will be {filename}.txt")
+
+print()
+print(mini_movie_frame)
+
+# Output number of tickets sold
+if tickets_sold == MAX_TICKETS:
+    sales_status = "\n*** All tickets have been sold ***"
+
+# Says how many tickets have been sold, and how many remaining
+else:
+    sales_status = f"\nYou have sold {tickets_sold} ticket(s). {MAX_TICKETS - tickets_sold} ticket(s) remaining."
 
 to_write = [heading, mini_movie_string, ticket_cost_heading, total_ticket_sales,
             total_profit, sales_status, winner_heading, winner_text]
@@ -247,32 +258,6 @@ text_file = open(write_to, "w+")
 for item in to_write:
     text_file.write(item)
     text_file.write("\n")
-
-# Heading
-print(heading)
-print(f"The file name will be {filename}.txt")
-
-print()
-print(mini_movie_frame)
-
-# Output total ticket sales and profit
-print("---- Ticket Cost / Profit ----")
-print(f"Total Ticket Sales: ${total:.2f}")
-print(f"Total Profit: ${profit:.2f}")
-
-print()
-print("---- Raffle Winner ----")
-print(f"Congratulations {winner_name}. You have won ${total_won} ie: your ticket is free!")
-
-
-# Output number of tickets sold
-if tickets_sold == MAX_TICKETS:
-    print("Congrats! You have sold all tickets!")
-
-# Says how many tickets have been sold, and how many remaining
-else:
-    print()
-    print(f"You have sold {tickets_sold} ticket(s). {MAX_TICKETS - tickets_sold} ticket(s) remaining.")
 
 # Close the file
 text_file.close()
